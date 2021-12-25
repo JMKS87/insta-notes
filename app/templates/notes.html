@@ -1,0 +1,11 @@
+{% extends 'index.html' %}
+{% block content %}
+<h4>Note {{context.name}}</h4>
+
+<form method="post">
+    <label for="content">Content:</label><br>
+    <textarea id="content" name="content">{{context.content}}</textarea><br>
+    <input type="submit" value="Save">
+</form>
+{{ url_for(request.endpoint, name=context.name) }}?id=5
+{% endblock %}
