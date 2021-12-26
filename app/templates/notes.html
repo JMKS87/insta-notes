@@ -1,11 +1,18 @@
 {% extends 'index.html' %}
 {% block content %}
-<h4>Note {{context.name}}</h4>
+<h4>Note <i>{{context.name}}</i></h4>
+
+{% if context.message %}
+    <div id="message">{{ context.message }}</div>
+{% endif %}
 
 <form method="post">
-    <label for="content">Content:</label><br>
-    <textarea id="content" name="content">{{context.content}}</textarea><br>
-    <input type="submit" value="Save">
+    {% if context.authorized %}
+        <label for="content">Content:</label><br>
+        <textarea id="content" name="content">{{context.content}}</textarea><br>
+    {% endif %}
+    <label for="password">Password:</label><br>
+    <input autocomplete="off" type="text" id="password" name="password"><br>
+    <input type="submit" value="Execute">
 </form>
-{{ url_for(request.endpoint, name=context.name) }}?id=5
 {% endblock %}

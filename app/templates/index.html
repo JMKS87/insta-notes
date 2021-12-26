@@ -5,10 +5,15 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Notes system</title>
+    <title>Insta-notes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
 <h3>Notes system</h3>
+<div>
+    Every subpage displays existing or creates a new note. Eg. for "my_note":
+    <a href="{{ url_for("get_note", name='my_note') }}">click</a>
+</div>
 <div>
 {% block content %} {% endblock %}
 </div>
