@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+from typing import Dict, Optional, Union
 
 from flask import Flask, render_template, request
 from flask.typing import ResponseReturnValue
@@ -32,12 +33,12 @@ def index() -> ResponseReturnValue:
 @app.route("/<name>", methods=["GET"])
 def get_note(name):
     context = {"name": name}
-    notes_path = os.path.join(DATA_DIR, f"{name}.json")
-    note_existed = os.path.isfile(notes_path)
+    note_path = os.path.join(DATA_DIR, f"{name}.json")
+    note_existed = os.path.isfile(note_path)
     if not note_existed:
         context["authorized"] = True
         return render_template("notes.html", context=context)
-    with open(notes_path, "r") as inf:
+    with open(note_path, "r") as inf:
         data = json.loads(inf.read())
     if data.get("password"):
         context["message"] = "Note is password-protected"
@@ -50,21 +51,21 @@ def get_note(name):
 @app.route("/<name>", methods=["POST"])
 def post_note(name) -> ResponseReturnValue:
     context = {"name": name}
-    notes_path = os.path.join(DATA_DIR, f"{name}.json")
-    note_existed = os.path.isfile(notes_path)
+    note_path = os.path.join(DATA_DIR, f"{name}.json")
+    note_existed = os.path.isfile(note_path)
     content = request.form.get("content")
     password = ""
     if (request_password := request.form.get("password")):
         password = HASHING_ALGORITHM(request_password.encode()).hexdigest()
     if not note_existed:
-        data = {"content": content, "password": password}
-        with open(notes_path, "w") as ouf:
-            ouf.write(json.dumps(data))
-        context["message"] = "Note saved"
-        context["authorized"] = True
-        context["content"] = content
-        return render_template("notes.html", context=context)
-    with open(notes_path, "r") as inf:
+        return _post_new_note(content, context, note_path, password)
+    return _post_existing_note(content, context, note_path, password)
+
+
+def _post_existing_note(
+    content: Optional[str], context: Dict[str, Union[str, bool, None]], note_path: str, password: str
+) -> ResponseReturnValue:
+    with open(note_path, "r") as inf:
         data = json.loads(inf.read())
     if (previous_password := data["password"]) and (previous_password != password):
         return unauthorized()
@@ -73,9 +74,21 @@ def post_note(name) -> ResponseReturnValue:
         context["content"] = data["content"]
         return render_template("notes.html", context=context)
     data = {"content": content, "password": password}
-    with open(notes_path, "w") as ouf:
+    with open(note_path, "w") as ouf:
         ouf.write(json.dumps(data))
     context["message"] = "Note saved"
+    context["content"] = content
+    return render_template("notes.html", context=context)
+
+
+def _post_new_note(
+    content: Optional[str], context: Dict[str, Union[str, bool, None]], note_path: str, password: str
+) -> ResponseReturnValue:
+    data = {"content": content, "password": password}
+    with open(note_path, "w") as ouf:
+        ouf.write(json.dumps(data))
+    context["message"] = "Note saved"
+    context["authorized"] = True
     context["content"] = content
     return render_template("notes.html", context=context)
 
