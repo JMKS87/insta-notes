@@ -6,9 +6,9 @@ from typing import Dict, Optional, Union
 from flask import Flask, render_template, request
 from flask.typing import ResponseReturnValue
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-DATA_DIR = os.path.join(BASE_DIR, "data")
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(APP_DIR, "static")
+DATA_DIR = os.path.join(APP_DIR, "data")
 
 HASHING_ALGORITHM = hashlib.sha3_512
 
