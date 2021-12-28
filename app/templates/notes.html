@@ -13,6 +13,10 @@
     {% endif %}
     <label for="password">Password:</label><br>
     <input autocomplete="off" type="text" id="password" name="password"><br>
+    {% if context.authorized %}
+        <label for="ttl">Lifespan (seconds):</label><br>
+        <input autocomplete="off" type="text" id="ttl" name="ttl" value="{{context.ttl}}"><br>
+    {% endif %}
     <input type="submit" value="Execute">
 </form>
 {% endblock %}
